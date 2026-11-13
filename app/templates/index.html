@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EvalForge — AI Response Evaluation</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">E</span><span>EvalForge</span></div>
+    <p class="side-label">WORKSPACE</p>
+    <a class="nav-link active" href="#overview">▦ &nbsp; Overview</a>
+    <a class="nav-link" href="#new-evaluation">＋ &nbsp; New evaluation</a>
+    <a class="nav-link" href="#history">◷ &nbsp; History</a>
+    <div class="sidebar-bottom"><span class="status-dot"></span> Local workspace<p class="muted tiny">Version 0.1.0 · MVP</p></div>
+  </aside>
+  <main class="main-content">
+    <header class="topbar">
+      <div><p class="eyebrow">AI QUALITY WORKSPACE</p><h1>Evaluation dashboard</h1><p class="subtitle">Compare responses, record quality scores, and learn from your results.</p></div>
+      <a class="primary-button top-action" href="#new-evaluation">＋ New evaluation</a>
+    </header>
+    <section id="overview" class="stats-grid">
+      <article class="stat-card"><p class="stat-label">Total evaluations</p><div class="stat-value" id="total-count">0</div><p class="stat-foot">Saved comparisons</p></article>
+      <article class="stat-card"><p class="stat-label">Average score</p><div class="stat-value" id="average-score">—</div><p class="stat-foot">Across both responses</p></article>
+      <article class="stat-card"><p class="stat-label">Response A wins</p><div class="stat-value" id="wins-a">0</div><p class="stat-foot">Your recorded preference</p></article>
+      <article class="stat-card"><p class="stat-label">Response B wins</p><div class="stat-value" id="wins-b">0</div><p class="stat-foot">Your recorded preference</p></article>
+    </section>
+
+<section id="analytics" class="panel">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">PERFORMANCE INSIGHTS</p>
+            <h2>Analytics dashboard</h2>
+            <p class="subtitle">Understand how your AI responses perform.</p>
+        </div>
+    </div>
+
+    <div class="analytics-grid">
+        <article class="stat-card">
+            <p class="stat-label">Total comparisons</p>
+            <div class="stat-value" id="analytics-total">0</div>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Response A wins</p>
+            <div class="stat-value" id="analytics-a-wins">0</div>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Response B wins</p>
+            <div class="stat-value" id="analytics-b-wins">0</div>
+        </article>
+
+        <article class="stat-card">
+            <p class="stat-label">Ties</p>
+            <div class="stat-value" id="analytics-ties">0</div>
+        </article>
+        <article class="stat-card">
+    <p class="stat-label">Response A win rate</p>
+    <div class="stat-value" id="analytics-a-rate">0%</div>
+</article>
+
+<article class="stat-card">
+    <p class="stat-label">Response B win rate</p>
+    <div class="stat-value" id="analytics-b-rate">0%</div>
+</article>
+
+<article class="stat-card">
+    <p class="stat-label">Tie rate</p>
+    <div class="stat-value" id="analytics-tie-rate">0%</div>
+</article>
+    </div>
+
+    <div class="analytics-grid">
+        <article class="response-card">
+            <h3>Average criterion scores</h3>
+            <div id="criteria-chart"></div>
+        </article>
+
+        <article class="response-card">
+            <h3>Score distribution</h3>
+            <div id="distribution-chart"></div>
+        </article>
+    </div>
+</section>
+
+<section id="new-evaluation" class="panel">
+      <div class="section-heading"><div><p class="eyebrow">NEW COMPARISON</p><h2>Evaluate two AI responses</h2><p class="subtitle">Enter a prompt and two responses, then score them using your judgment.</p></div><span class="step-pill">01 / EVALUATE</span></div>
+      <form id="evaluation-form">
+        <label for="prompt">Original prompt</label>
+        <textarea id="prompt" rows="3" placeholder="Enter the question or instruction given to the AI..." required></textarea>
+        <div class="response-grid">
+         <div class="response-card">
+    <div class="response-title">
+        <span class="response-badge badge-a">A</span>
+        <h3>Response A</h3>
+    </div>
+    <textarea id="response-a" rows="7" placeholder="Paste the first AI response..." required></textarea>
+    <div class="overall-score">
+        <label>Response A overall quality</label>
+        <strong id="overall-score-a">3.00 / 5</strong>
+    </div>
+</div>
+
+<div class="response-card">
+    <div class="response-title">
+        <span class="response-badge badge-b">B</span>
+        <h3>Response B</h3>
+    </div>
+    <textarea id="response-b" rows="7" placeholder="Paste the second AI response..." required></textarea>
+    <div class="overall-score">
+        <label>Response B overall quality</label>
+        <strong id="overall-score-b">3.00 / 5</strong>
+    </div>
+</div></div>
+        <div class="criteria-section">
+    <h3>Quality evaluation</h3>
+    <p class="muted">Rate each response from 1 (Poor) to 5 (Excellent).</p>
+
+    <div class="response-grid">
+        <div class="response-card">
+            <h3>Response A scores</h3>
+
+            <label for="accuracy-a">Accuracy</label>
+            <select id="accuracy-a">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+            <label for="relevance-a">Relevance</label>
+            <select id="relevance-a">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+            <label for="clarity-a">Clarity</label>
+            <select id="clarity-a">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+            <label for="completeness-a">Completeness</label>
+            <select id="completeness-a">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+
+        <div class="response-card">
+            <h3>Response B scores</h3>
+
+            <label for="accuracy-b">Accuracy</label>
+            <select id="accuracy-b">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+            <label for="relevance-b">Relevance</label>
+            <select id="relevance-b">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+            <label for="clarity-b">Clarity</label>
+            <select id="clarity-b">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+            <label for="completeness-b">Completeness</label>
+            <select id="completeness-b">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+    </div>
+</div>
+        <div class="form-bottom">
+          <div class="winner-field"><label for="winner">Which response is better overall?</label><select id="winner"><option value="A">Response A</option><option value="B">Response B</option><option value="Tie">Tie — equally good</option></select></div>
+          <div class="notes-field"><label for="notes">Reasoning / notes (optional)</label><input id="notes" type="text" maxlength="3000" placeholder="Why did you choose this response?"></div>
+        </div>
+        <div class="form-actions"><p id="form-message" class="form-message" role="status"></p><button class="primary-button" type="submit">Save evaluation <span>→</span></button></div>
+      </form>
+    </section>
+    <section id="history" class="panel history-panel">
+      <div class="section-heading"><div><p class="eyebrow">YOUR WORK</p><h2>Evaluation history</h2><p class="subtitle">Your latest saved comparisons.</p></div><button class="secondary-button" id="refresh-button" type="button">
+    Refresh
+</button><button class="primary-button" id="export-button" type="button">
+    Export CSV ↓
+</button></div>
+      <div id="history-list" class="history-list"><div class="empty-state">No evaluations yet. Save your first comparison above.</div></div>
+    </section>
+    <footer>EvalForge · Independent learning project · Data stays on this computer</footer>
+  </main>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>
