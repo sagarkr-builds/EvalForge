@@ -1,5 +1,6 @@
 from pathlib import Path
 import sqlite3
+from contextlib import contextmanager
 from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException, Request
@@ -15,12 +16,15 @@ app = FastAPI(title="EvalForge", description="AI Response Evaluation Platform", 
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
-
+@contextmanager
 def get_connection():
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
-    return connection
 
+    try:
+        yield connection
+    finally:
+        connection.close()
 
 def initialize_database():
     with get_connection() as connection:
@@ -73,24 +77,23 @@ def on_startup():
 
 
 class EvaluationCreate(BaseModel):
-    prompt: str
-    response_a: str
-    response_b: str
+    prompt: str = Field(min_length=1)
+    response_a: str = Field(min_length=1)
+    response_b: str = Field(min_length=1)
 
-    score_a: int
-    score_b: int
-    winner: str
+    score_a: int = Field(ge=1, le=5)
+    score_b: int = Field(ge=1, le=5)
     notes: str = ""
 
-    accuracy_a: int = 3
-    relevance_a: int = 3
-    clarity_a: int = 3
-    completeness_a: int = 3
+    accuracy_a: int = Field(default=3, ge=1, le=5)
+    relevance_a: int = Field(default=3, ge=1, le=5)
+    clarity_a: int = Field(default=3, ge=1, le=5)
+    completeness_a: int = Field(default=3, ge=1, le=5)
 
-    accuracy_b: int = 3
-    relevance_b: int = 3
-    clarity_b: int = 3
-    completeness_b: int = 3
+    accuracy_b: int = Field(default=3, ge=1, le=5)
+    relevance_b: int = Field(default=3, ge=1, le=5)
+    clarity_b: int = Field(default=3, ge=1, le=5)
+    completeness_b: int = Field(default=3, ge=1, le=5)
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
@@ -114,11 +117,26 @@ def list_evaluations():
 
 @app.post("/api/evaluations", status_code=201)
 def create_evaluation(item: EvaluationCreate):
-    if item.winner not in ["A", "B", "Tie"]:
-        raise HTTPException(
-            status_code=422,
-            detail="Winner must be A, B, or Tie."
-        )
+    average_a = (
+        item.accuracy_a
+        + item.relevance_a
+        + item.clarity_a
+        + item.completeness_a
+    ) / 4
+
+    average_b = (
+        item.accuracy_b
+        + item.relevance_b
+        + item.clarity_b
+        + item.completeness_b
+    ) / 4
+
+    if average_a > average_b:
+        winner = "A"
+    elif average_b > average_a:
+        winner = "B"
+    else:
+        winner = "Tie"
 
     criteria = [
         item.accuracy_a,
@@ -158,7 +176,7 @@ def create_evaluation(item: EvaluationCreate):
                 item.response_b.strip(),
                 item.score_a,
                 item.score_b,
-                item.winner,
+                winner,
                 item.notes.strip(),
                 created_at,
                 item.accuracy_a,
