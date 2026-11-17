@@ -1,6 +1,6 @@
 from pathlib import Path
 import sqlite3
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException, Request
@@ -12,7 +12,19 @@ from pydantic import BaseModel, Field
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR.parent / "evalforge.db"
 
-app = FastAPI(title="EvalForge", description="AI Response Evaluation Platform", version="0.1.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    initialize_database()
+    yield
+
+
+app = FastAPI(
+    title="EvalForge",
+    description="AI Response Evaluation Platform",
+    version="0.1.0",
+    lifespan=lifespan
+)
+
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
@@ -70,10 +82,6 @@ def initialize_database():
 
         connection.commit()
 
-
-@app.on_event("startup")
-def on_startup():
-    initialize_database()
 
 
 class EvaluationCreate(BaseModel):

@@ -263,9 +263,16 @@ document.querySelector("#export-button").addEventListener("click", async () => {
             "winner", "notes", "created_at"
         ];
 
-        const escapeCSV = value =>
-            `"${String(value ?? "").replace(/"/g, '""')}"`;
+        const escapeCSV = value => {
+    let text = String(value ?? "");
 
+    // Prevent spreadsheet formula injection.
+    if (/^[\s]*[=+\-@\t\r]/.test(text)) {
+        text = "'" + text;
+    }
+
+    return `"${text.replace(/"/g, '""')}"`;
+};
         const csv = [
             columns.join(","),
             ...evaluations.map(item =>
@@ -284,7 +291,7 @@ document.querySelector("#export-button").addEventListener("click", async () => {
         link.download = "evalforge-evaluations.csv";
         link.click();
 
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
 
     } catch (error) {
         alert("Export failed: " + error.message);
