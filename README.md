@@ -1,5 +1,9 @@
 # EvalForge — AI Response Evaluation Platform
 
+🌐 **Live Demo:** https://evalforge-u62c.onrender.com
+
+🚀 **Deployment:** Hosted on Render
+
 EvalForge is a full-stack web application designed to compare and evaluate two AI-generated responses using structured quality criteria.
 
 It helps evaluators assess response quality, record preferences, analyze evaluation results, and maintain a history of comparisons.
