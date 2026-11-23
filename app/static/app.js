@@ -190,19 +190,21 @@ form.addEventListener("submit", async event => {
     prompt: document.querySelector("#prompt").value,
     response_a: document.querySelector("#response-a").value,
     response_b: document.querySelector("#response-b").value,
+
 score_a: Number((
     Number(document.querySelector("#accuracy-a").value) +
     Number(document.querySelector("#relevance-a").value) +
     Number(document.querySelector("#clarity-a").value) +
     Number(document.querySelector("#completeness-a").value)
-).toFixed(2)),
+).toFixed(2)) / 4,
 
 score_b: Number((
     Number(document.querySelector("#accuracy-b").value) +
     Number(document.querySelector("#relevance-b").value) +
     Number(document.querySelector("#clarity-b").value) +
     Number(document.querySelector("#completeness-b").value)
-).toFixed(2)),
+).toFixed(2)) / 4,
+
 
 accuracy_a: Number(document.querySelector("#accuracy-a").value),
 relevance_a: Number(document.querySelector("#relevance-a").value),
@@ -220,7 +222,13 @@ notes: document.querySelector("#notes").value
   try {
     const response = await fetch("/api/evaluations", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)});
     const result = await response.json();
-    if (!response.ok) throw new Error(result.detail || "Could not save evaluation.");
+    if (!response.ok) {
+    const errorMessage = Array.isArray(result.detail)
+        ? result.detail.map(error => error.msg).join(", ")
+        : result.detail || "Could not save evaluation.";
+
+    throw new Error(errorMessage);
+}
     form.reset();
     message.textContent = "Evaluation saved successfully.";
     await loadDashboard();
