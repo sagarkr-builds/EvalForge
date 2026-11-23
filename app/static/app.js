@@ -101,7 +101,8 @@ document.querySelector("#distribution-chart").innerHTML =
             </div>
 
             <div class="history-meta">
-                A: ${item.score_a}/5 | B: ${item.score_b}/5 |
+                A: ${Number(item.score_a).toFixed(2)}/5 |
+                B: ${Number(item.score_b).toFixed(2)}/5 |
                 ${new Date(item.created_at).toLocaleString()}
             </div>
 
@@ -189,19 +190,19 @@ form.addEventListener("submit", async event => {
     prompt: document.querySelector("#prompt").value,
     response_a: document.querySelector("#response-a").value,
     response_b: document.querySelector("#response-b").value,
-    score_a: Math.round((
+score_a: Number((
     Number(document.querySelector("#accuracy-a").value) +
     Number(document.querySelector("#relevance-a").value) +
     Number(document.querySelector("#clarity-a").value) +
     Number(document.querySelector("#completeness-a").value)
-) / 4),
+).toFixed(2)),
 
-score_b: Math.round((
+score_b: Number((
     Number(document.querySelector("#accuracy-b").value) +
     Number(document.querySelector("#relevance-b").value) +
     Number(document.querySelector("#clarity-b").value) +
     Number(document.querySelector("#completeness-b").value)
-) / 4),
+).toFixed(2)),
 
 accuracy_a: Number(document.querySelector("#accuracy-a").value),
 relevance_a: Number(document.querySelector("#relevance-a").value),

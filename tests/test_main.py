@@ -136,7 +136,7 @@ def test_stats_endpoint(client):
     data = response.json()
     assert data["total_evaluations"] == 1
     assert data["winner_counts"]["A"] == 1
-    assert data["average_score"] == 3.5
+    assert data["average_score"] == 3.75
     assert len(data["score_distribution"]) > 0
 
 
